@@ -8,7 +8,7 @@ option(SMTG_CXX_STANDAR "" 20)
 
 set(CMAKE_OSX_DEPLOYMENT_TARGET 10.13 CACHE STRING "")
 
-set(vst3sdk_SOURCE_DIR "D:/VST/VST_SDK/vst3sdk")
+set(vst3sdk_SOURCE_DIR "C:/D/Repos/VST_SDK/vst3sdk")
 if(NOT vst3sdk_SOURCE_DIR)
     message(FATAL_ERROR "Path to VST3 SDK is empty!")
 endif()
@@ -17,7 +17,7 @@ project(VoMPE
     # This is your plug-in version number. Change it here only.
     # Version number symbols usable in C++ can be found in
     # source/version.h and ${PROJECT_BINARY_DIR}/projectversion.h.
-    VERSION 1.0.0.0 
+    VERSION 1.1.0.0 
     DESCRIPTION "VoMPE"
 )
 
