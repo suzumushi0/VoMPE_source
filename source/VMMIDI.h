@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2024 suzumushi
 //
-// 2024-10-10		VMMIDI.h
+// 2024-11-3		VMMIDI.h
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -17,7 +17,7 @@
 
 namespace suzumushi {
 
-constexpr int noteOnTime {10};		// noteOnTime * frame_len = maximum time [ms] since onteOn (pitchbend mode only)
+constexpr int noteOnTime {12};		// noteOnTime * frame_len = maximum time [ms] since onteOn (pitchbend mode only)
 
 struct peak_freq {
 	int freq {0};					// index to spectrum table index
@@ -40,7 +40,7 @@ private:
 		bool noteOn		{false};
 		float freq		{0.0f};
 		int note_number	{0};
-		int velocity	{0};
+		int noteOnTime	{noteOnTime};
 	} MIDI_stat [max_FB];					// indexed by formant band number (not MIDI channel number)
 };
 

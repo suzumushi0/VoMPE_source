@@ -1,7 +1,7 @@
 //
 // Copyright (c) 2024 suzumushi
 //
-// 2024-10-10		VMMIDI.cpp
+// 2024-11-3		VMMIDI.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -65,8 +65,10 @@ void VMMIDI:: process (const GUI_param &gp, const struct peak_freq (&peak_freq) 
 		if (freq >= freq_TBL [21] && freq <= freq_TBL [108]) {
 			int note_number = 12.0f * std::log2 (freq / 440.0f) + 69.0f + 0.5f;
 			int velocity = std::max (std::min ((int)((peak_freq [i].amplitude + 20.0f) / 80.0f * 127.0f), 127), 0);
-			if (MIDI_stat [i].noteOn && ((pbend && freq != MIDI_stat [i].freq) || (! pbend && note_number != MIDI_stat [i].note_number))) {
+			if (MIDI_stat [i].noteOn && ((pbend && MIDI_stat [i].noteOnTime-- == 0) || (! pbend && note_number != MIDI_stat [i].note_number))) {
+				// update MIDI_stat
 				MIDI_stat [i].noteOn = false;
+				MIDI_stat [i].noteOnTime = noteOnTime;
 				// send note off
 				oEvent.type = Vst::Event::kNoteOffEvent;
 				oEvent.noteOff.channel = i + 1;
@@ -74,33 +76,34 @@ void VMMIDI:: process (const GUI_param &gp, const struct peak_freq (&peak_freq) 
 				oEvent.noteOff.velocity = 0;
 				data.outputEvents->addEvent (oEvent);
 			}
-			// update MIDI_stat
-			MIDI_stat [i].note_number = note_number;
-			MIDI_stat [i].velocity = velocity;
-			MIDI_stat [i].freq = freq;
+			if (pbend && (freq != MIDI_stat [i].freq || ! MIDI_stat [i].noteOn)) {
+				// send pitch bend
+				float cent = 1'200.0f * std::log2 (freq / freq_TBL [MIDI_stat [i].note_number]);
+				int pitch_bend = cent * 8'191.0f / 4'800.0f + 8'192.0f + 0.5f;
+				oEvent.type = Vst::Event::kLegacyMIDICCOutEvent;
+				oEvent.midiCCOut.controlNumber = Vst::kPitchBend;
+				oEvent.midiCCOut.channel = i + 1;
+				oEvent.midiCCOut.value = pitch_bend % 128;		// LSB
+				oEvent.midiCCOut.value2 = pitch_bend / 128;		// USB
+				data.outputEvents->addEvent (oEvent);
+			}
+			MIDI_stat [i].freq = freq;				
 			if (! MIDI_stat [i].noteOn) {
+				// update MIDI_stat
 				MIDI_stat [i].noteOn = true;
-				if (pbend) {
-					// send pitch bend
-					float cent = 1'200.0f * std::log2 (freq / freq_TBL [MIDI_stat [i].note_number]);
-					int pitch_bend = cent * 8'191.0f / 4'800.0f + 8'192.0f + 0.5f;
-					oEvent.type = Vst::Event::kLegacyMIDICCOutEvent;
-					oEvent.midiCCOut.controlNumber = Vst::kPitchBend;
-					oEvent.midiCCOut.channel = i + 1;
-					oEvent.midiCCOut.value = pitch_bend % 128;		// LSB
-					oEvent.midiCCOut.value2 = pitch_bend / 128;		// USB
-					data.outputEvents->addEvent (oEvent);
-				}
+				MIDI_stat [i].note_number = note_number;
 				// send note on
 				oEvent.type = Vst::Event::kNoteOnEvent;
 				oEvent.noteOn.channel = i + 1;
-				oEvent.noteOn.pitch = MIDI_stat [i].note_number;
-				oEvent.noteOn.velocity = MIDI_stat [i].velocity;
+				oEvent.noteOn.pitch = note_number;
+				oEvent.noteOn.velocity = velocity;
 				data.outputEvents->addEvent (oEvent);
 			}
 		} else {
 			if (MIDI_stat [i].noteOn) {
+				// update MIDI_stat
 				MIDI_stat [i].noteOn = false;
+				MIDI_stat [i].noteOnTime = noteOnTime;
 				// send note off
 				oEvent.type = Vst::Event::kNoteOffEvent;
 				oEvent.noteOff.channel = i + 1;
@@ -114,8 +117,10 @@ void VMMIDI:: process (const GUI_param &gp, const struct peak_freq (&peak_freq) 
 
 void VMMIDI:: reset ()
 {
-	for (int i = 0; i < max_FB; i++)
+	for (int i = 0; i < max_FB; i++) {
 		MIDI_stat [i].noteOn = false;
+		MIDI_stat [i].noteOnTime = noteOnTime;
+	}
 }
 
 } // namespace suzumushi
