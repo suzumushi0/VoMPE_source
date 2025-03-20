@@ -1,7 +1,7 @@
 //
-// Copyright (c) 2024 suzumushi
+// Copyright (c) 2024-2025 suzumushi
 //
-// 2024-10-3		VMViewcreator.cpp
+// 2025-3-20		VMViewcreator.cpp
 //
 // Licensed under Creative Commons Attribution-NonCommercial-ShareAlike 4.0 (CC BY-NC-SA 4.0).
 //
@@ -48,7 +48,7 @@ struct VMFormantCreator: ViewCreatorAdapter
 	}
 };
 
-VMFormantCreator __gHVMFormantCreator;
+VMFormantCreator __gVMFormantCreator;
 
 
 // Creator for VMFormantRuler
@@ -81,7 +81,7 @@ struct VMFormantRulerCreator: ViewCreatorAdapter
 	}
 };
 
-VMFormantRulerCreator __gHVMFormantRulerCreator;
+VMFormantRulerCreator __gVMFormantRulerCreator;
 
 
 // Creator for VMSpectralEnvelope
@@ -114,7 +114,7 @@ struct VMSpectralEnvelopeCreator: ViewCreatorAdapter
 	}
 };
 
-VMSpectralEnvelopeCreator __gHVMSpectralEnvelopeCreator;
+VMSpectralEnvelopeCreator __gVMSpectralEnvelopeCreator;
 
 
 // Creator for VMSpectralEnvelopeRuler
@@ -147,7 +147,7 @@ struct VMSpectralEnvelopeRulerCreator: ViewCreatorAdapter
 	}
 };
 
-VMSpectralEnvelopeRulerCreator __gHVMSpectralEnvelopeRulerCreator;
+VMSpectralEnvelopeRulerCreator __gVMSpectralEnvelopeRulerCreator;
 
 
 } // namespace UIViewCreator
