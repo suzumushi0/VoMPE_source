@@ -62,7 +62,10 @@ if(SMTG_ENABLE_VSTGUI_SUPPORT)
     )
     smtg_target_add_plugin_resources(VoMPE
         RESOURCES
-            "resource/VoMPE.uidesc"
+            resource/VoMPE.uidesc
+            resource/about.png
+            resource/handle.png
+            resource/slider.png
     )
 endif(SMTG_ENABLE_VSTGUI_SUPPORT)
 # -------------------
